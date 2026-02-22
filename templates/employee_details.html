@@ -217,10 +217,10 @@
                                 <label class="form-label small fw-bold">Bonus</label>
                                 <input type="number" name="bonus" class="form-control" step="0.01" value="0">
                             </div>
-                            <!-- <div class="col-6">
+                            <div class="col-6">
                                 <label class="form-label small fw-bold">Profit Sharing</label>
                                 <input type="number" name="profit_sharing" class="form-control" step="0.01" value="{{ employee.profit_sharing or 0 }}">
-                            </div> -->
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-warning w-100 fw-bold py-2" id="submitBtn">
                             <span class="btn-text">Save Record</span>
@@ -379,12 +379,12 @@
                             <input type="date" name="end_date" class="form-control" value="{{ employee.end_date.strftime('%Y-%m-%d') if employee.end_date else '' }}">
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="form-label small fw-bold text-muted">Basic Salary (RM)</label>
                             <input type="number" name="basic_salary" class="form-control" step="0.01" value="{{ employee.basic_salary }}">
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="form-label small fw-bold text-muted">Fixed Allowance (Elaun Tetap)</label>
                             <input type="number" name="fixed_allowance" class="form-control" step="0.01" value="{{ employee.fixed_allowance or 0 }}">
                         </div>
