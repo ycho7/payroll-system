@@ -268,6 +268,8 @@ def calculate_age_from_ic(ic_string, month_year_str=None):
     target_year = target_date.year
     target_month = target_date.month
     
+    ic_string=ic_string.replace("-", "")
+
     # 2. Extract Birth Info from IC
     year_short = int(ic_string[:2])
     birth_month = int(ic_string[2:4])
