@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from typing import Optional, List
 from datetime import date
 from enum import Enum
@@ -38,6 +38,11 @@ class EmployeeBase(BaseModel):
         default=None, 
         description="Resignation or contract end date. Leave empty if still active."
     )
+    @validator("join_date", "end_date", pre=True)
+    def empty_str_to_none(cls, v):
+        if v == "":
+            return None
+        return v
 
 # Fields required only when creating a new employee
 class EmployeeCreate(EmployeeBase):
