@@ -282,7 +282,7 @@ def get_ea_records(db, employee_id, year):
     return {
         "year": year,
         "id": employee.id,
-        "full_name": employee.full_name.upper(),
+        "full_name": employee.full_name,
         "job_title": employee.job_title,
         "ic_no": employee.ic_number,
         "epf_no": employee.kwsp_number,
@@ -356,13 +356,14 @@ def create_ea_overlay(data):
         x, y = pos(40, 47)
         can.drawString(x, y, f"{data.get('number_of_kids')}")
 
-    if data.get('join_date') and data.get('year') in str(data.get('join_date')):
-        x, y = pos(130, 47)
-        can.drawString(x, y, data.get('join_date', '').strftime('%d/%m/%Y'))
-
     if data.get('end_date') and data.get('year') in str(data.get('end_date')):
+        x, y = pos(130, 48)
+        can.drawString(x, y, data.get('join_date', '').strftime('%d/%m/%Y'))
         x, y = pos(130, 53)
         can.drawString(x, y, data.get('end_date', '').strftime('%d/%m/%Y'))
+    elif data.get('join_date') and data.get('year') in str(data.get('join_date')):
+        x, y = pos(130, 48)
+        can.drawString(x, y, data.get('join_date', '').strftime('%d/%m/%Y'))
 
     # ======================
     # SECTION B

@@ -84,6 +84,8 @@
                                 <th>Staff Name</th>
                                 <th>Position</th>
                                 <th>Basic Salary</th>
+                                <th>Fixed Allowance</th>
+                                <th>Status</th>
                                 <th class="text-end px-4">Actions</th>
                             </tr>
                         </thead>
@@ -98,6 +100,12 @@
                                 </td>
                                 <td><span class="job-badge">{{ emp.job_title or 'Staff' }}</span></td>
                                 <td>RM {{ "{:,.2f}".format(emp.basic_salary) }}</td>
+                                <td>RM {{ "{:,.2f}".format(emp.fixed_allowance) }}</td>
+                                {% if emp.end_date %}
+                                    <td><span class="badge bg-danger ms-2" style="font-size: 0.65rem;">Resigned</span></td>
+                                {% else %}
+                                    <td><span class="badge bg-success ms-2" style="font-size: 0.65rem;">Active</span></td>
+                                {% endif %}
                                 <td class="text-end px-4">
                                     <div class="btn-group">
                                         <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ emp.id }}">
