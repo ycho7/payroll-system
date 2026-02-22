@@ -288,7 +288,7 @@ def get_ea_records(db, employee_id, year):
         "epf_no": employee.kwsp_number,
         "socso_no": employee.socso_number,
         "tin_number": employee.tin_number,
-        "gross_salary": sum(r.basic_salary + r.fixed_allowance + r.additional_allowance for r in records),
+        "gross_salary": sum(r.basic_salary + r.fixed_allowance + r.additional_allowance + r.profit_sharing for r in records),
         "bonus": sum(r.bonus for r in records),
         "epf": sum(r.epf_employee for r in records),
         "socso_eis": sum(r.socso_employee + r.eis_employee for r in records),
