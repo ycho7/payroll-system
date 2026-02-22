@@ -34,12 +34,46 @@ uvicorn main:app --reload
 ```
 
 ## ✨ Dashboard Features
-- Period-First Navigation: The table prioritized the Period (Year-Month) as the first column, followed by the Employee Name.
-- Live Metrics Engine: The summary cards (Basic, Allowances, Profit, Statutory, and Total CTC) update in real-time as you search or filter.
-- Modern Pagination: A sleek, custom-styled selector (10, 20, 50 rows) for easy navigation.
-- CSV Export: Integrated Button that allows you to export exactly what you see on the screen into a professional CSV file.
-- Clean Navigation: A modern header featuring a Home icon and a Settings button for quick transitions.
-- Multi-Column Sorting: Data is pre-sorted by the newest period first, then alphabetically by name.
+
+- **Multi-Company Support**  
+  Create and manage **multiple company profiles**, each with its own employees, payroll records, and reporting context.
+
+- **Employee Management**  
+  Add, edit, and manage employees under each company, including personal details required for payroll and statutory reporting.
+
+- **Payroll Entry & Automation**  
+  Key in employee payslips manually while the system **automatically calculates statutory contributions**, including:
+  - **KWSP (EPF)**  
+  - **SOCSO (PERKESO)**  
+  Based on the **latest contribution rules (updated for 2026)**.
+
+- **Centralized Payroll Cost Dashboard**  
+  A comprehensive dashboard to view **all payslip-related costs**, allowing employers to quickly understand total payroll expenses across employees and periods.
+
+- **Period-First Navigation**  
+  The payroll table prioritizes the Period (Year–Month) as the first column, followed by the Employee Name, making monthly analysis intuitive.
+
+- **Live Cost Intelligence Engine**  
+  Summary cards (Basic Salary, Allowances, Statutory Contributions, Employer Cost, and Total CTC) update in real time as you search, filter, or paginate.
+
+- **EA Form Auto-Generation**  
+  Automatically generate **filled EA Forms** using:
+  - Employee personal information  
+  - Employee payslip history  
+  - Company profile details  
+  This significantly reduces manual paperwork and reporting errors.
+
+- **Modern Pagination & Filtering**  
+  Clean, custom-styled pagination (10 / 20 / 50 rows) with instant search and multi-column sorting.
+
+- **CSV Export**  
+  Export exactly what is shown on screen into a CSV file for reporting, auditing, or accounting purposes.
+
+- **Clean & Intuitive Navigation**  
+  Modern header with quick access actions for seamless movement between dashboards, companies, and payroll views.
+
+- **Smart Sorting**  
+  Payroll data is automatically sorted by the **latest period first**, then alphabetically by employee name for clarity.
 
 ## 📁 Project Structure
 - main.py: FastAPI Routes & App Logic
