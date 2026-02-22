@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Payroll Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+        .page-header { background: white; padding: 1.5rem 0; border-bottom: 1px solid #e9ecef; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .header-title { font-weight: 700; color: #1a1d23; letter-spacing: -0.5px; margin: 0; }
+        .btn-add { font-weight: 600; padding: 0.6rem 1.2rem; border-radius: 8px; transition: all 0.2s; }
+        .employee-link { color: #0d6efd; text-decoration: none; font-weight: 600; }
+        .table-container { background: white; border-radius: 12px; overflow: hidden; border: 1px solid #e9ecef; }
+        .table thead th { background-color: #f8f9fa; color: #6c757d; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; padding: 1rem; border-bottom: 1px solid #e9ecef; }
+        .table tbody td { padding: 1rem; vertical-align: middle; }
+        .nav-pills .nav-link { color: #6c757d; font-weight: 500; border-radius: 8px; margin-right: 0.5rem; }
+        .nav-pills .nav-link.active { background-color: #e7f1ff; color: #0d6efd; }
+        .job-badge { font-size: 0.7rem; background: #f1f3f5; color: #495057; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600; }
+        .btn-group .btn { border-radius: 6px; }
+    </style>
+</head>
+
+<body>
+
+    <header class="page-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary text-white p-2 rounded-3 me-3">
+                            <i class="bi bi-wallet2 fs-4"></i>
+                        </div>
+                        <div>
+                            <h2 class="header-title">Payroll Dashboard</h2>
+                            <p class="text-muted small mb-0">2026 Statutory Rates (EPF/SOCSO/EIS)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <a href="/companies-page/" class="btn btn-outline-primary btn-add shadow-sm me-2">
+                        <i class="bi bi-building-plus me-2"></i>Company Settings
+                    </a>
+                    
+                    <button type="button" class="btn btn-primary btn-add shadow-sm" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+                        <i class="bi bi-plus-lg me-2"></i>Add New Employee
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mb-5">
+        <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+            {% for company in companies %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if loop.first %}active{% endif %}" 
+                        id="tab-btn-{{ company.id }}" 
+                        data-bs-toggle="pill" 
+                        data-bs-target="#company-pane-{{ company.id }}" 
+                        type="button" 
+                        role="tab" 
+                        aria-selected="{% if loop.first %}true{% else %}false{% endif %}">
+                    <i class="bi bi-building me-1"></i> {{ company.name }}
+                </button>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+            {% for company in companies %}
+            <div class="tab-pane fade {% if loop.first %}show active{% endif %}"
+                 id="company-pane-{{ company.id }}" 
+                 role="tabpanel" 
+                 aria-labelledby="tab-btn-{{ company.id }}">
+            
+                <div class="table-container shadow-sm">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Staff Name</th>
+                                <th>Position</th>
+                                <th>Basic Salary</th>
+                                <th class="text-end px-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for emp in employees if emp.company_id == company.id %}
+                            <tr id="emp-row-{{ emp.id }}">
+                                <td>
+                                    <a href="/employees/{{ emp.id }}" class="employee-link">
+                                        {{ emp.full_name }}
+                                    </a>
+                                    <div class="text-muted small">IC: {{ emp.ic_number or 'N/A' }}</div>
+                                </td>
+                                <td><span class="job-badge">{{ emp.job_title or 'Staff' }}</span></td>
+                                <td>RM {{ "{:,.2f}".format(emp.basic_salary) }}</td>
+                                <td class="text-end px-4">
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ emp.id }}">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <a href="/employees/{{ emp.id }}/payroll-dashboard" class="btn btn-sm btn-outline-success">
+                                            <i class="bi bi-speedometer2"></i>
+                                        </a>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee({{ emp.id }}, '{{ emp.full_name }}')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        
+                            <div class="modal fade" id="editModal{{ emp.id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content border-0 shadow-lg">
+                                        <div class="modal-header bg-primary text-white">
+                                            <h5 class="modal-title fw-bold">Edit {{ emp.full_name }}</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <form onsubmit="saveEmployeeEdit(event, {{ emp.id }})">
+                                            <div class="modal-body p-4 text-start">
+                                                <div class="row g-3">
+                                                    <div class="col-12">
+                                                        <label class="form-label fw-semibold small">Full Name</label>
+                                                        <input type="text" name="full_name" class="form-control" value="{{ emp.full_name }}" required>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label class="form-label fw-semibold small">Company</label>
+                                                        <select name="company_name" class="form-select">
+                                                            {% for c in companies %}
+                                                            <option value="{{ c.name }}" {% if emp.company_id == c.id %}selected{% endif %}>
+                                                                {{ c.name }}
+                                                            </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small">Job Title</label>
+                                                        <input type="text" name="job_title" class="form-control" value="{{ emp.job_title or '' }}">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small">Basic Salary (RM)</label>
+                                                        <input type="number" name="basic_salary" class="form-control" step="0.01" value="{{ emp.basic_salary }}" required>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small">IC Number</label>
+                                                        <input type="text" name="ic_number" class="form-control" value="{{ emp.ic_number or '' }}">
+                                                    </div>
+                                                    
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small">TIN Number (LHDN)</label>
+                                                        <input type="text" name="tin_number" class="form-control" value="{{ emp.tin_number or '' }}">
+                                                    </div>
+                                                    
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small">KWSP Number</label>
+                                                        <input type="text" name="kwsp_number" class="form-control" value="{{ emp.kwsp_number or '' }}">
+                                                    </div>
+                                                    
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small">SOCSO Number</label>
+                                                        <input type="text" name="socso_number" class="form-control" value="{{ emp.socso_number or '' }}">
+                                                    </div>
+                                                    
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small">Join Date</label>
+                                                        <input type="date" name="join_date" class="form-control" value="{{ emp.join_date or '' }}">
+                                                    </div>
+                                                    
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small">Fixed Allowance</label>
+                                                        <input type="number" name="fixed_allowance" class="form-control" step="0.01" value="{{ emp.fixed_allowance or 0 }}">
+                                                    </div>
+                                                    
+                                                    <div class="col-12">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" name="is_malaysian" id="editMaly{{ emp.id }}" {% if emp.is_malaysian %}checked{% endif %}>
+                                                            <label class="form-check-label small" for="editMaly{{ emp.id }}">Malaysian Citizen / PR</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer bg-light border-0">
+                                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-primary btn-sm px-4">Save Changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        
+                            {% if not employees|selectattr('company_id', 'equalto', company.id)|list %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    <i class="bi bi-people me-2"></i>No employees found for this company.
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Add Employee Modal -->
+    <div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold">Add New Employee</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="employeeForm">
+                    <div class="modal-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Full Name</label>
+                                <input type="text" name="full_name" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Job Title / Position</label>
+                                <input type="text" name="job_title" class="form-control" placeholder="e.g. Staff">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">IC Number</label>
+                                <input type="text" name="ic_number" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">TIN Number (LHDN)</label>
+                                <input type="text" name="tin_number" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">KWSP Number</label>
+                                <input type="text" name="kwsp_number" class="form-control" placeholder="e.g. 1234567890">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">SOCSO Number</label>
+                                <input type="text" name="socso_number" class="form-control" placeholder="e.g. 987654321">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Join Date</label>
+                                <input type="date" name="join_date" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Company</label>
+                                <select name="company_id" class="form-select" required>
+                                    <option value="" selected disabled>Choose a company...</option>
+                                    {% for company in companies %}
+                                    <option value="{{ company.id }}">
+                                        {{ company.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Basic Salary (RM)</label>
+                                <input type="number" name="basic_salary" class="form-control" min="1700" value="1700" step="0.01" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold small">Fixed Allowance</label>
+                                <input type="number" name="fixed_allowance" class="form-control" value="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold small">Profit Sharing</label>
+                                <input type="number" name="profit_sharing" class="form-control" value="0">
+                            </div>
+                            <div class="col-12 border-top pt-3 mt-3">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="is_malaysian" id="malyCheck" checked>
+                                    <label class="form-check-label small fw-medium" for="malyCheck">Malaysian Citizen / PR</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="formMessage" class="mt-3"></div>
+                    </div>
+                    <div class="modal-footer bg-light border-0">
+                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary px-4">Create Employee</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="modal fade" id="addCompanyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold">Company Profile (EA Form Setup)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="companyForm">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small">Registered Company Name</label>
+                            <input type="text" name="name" class="form-control" placeholder="e.g. CH Hotel Sdn Bhd" required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Employer No. (E)</label>
+                                <input type="text" name="e_number" class="form-control" placeholder="E 123456789">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Phone No.</label>
+                                <input type="text" name="phone_no" class="form-control" placeholder="03-XXXXXXX">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small">Registered Address</label>
+                            <textarea name="address" class="form-control" rows="2"></textarea>
+                        </div>
+                        <hr>
+                        <p class="text-muted small fw-bold">AUTHORIZED SIGNATORY</p>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small">Officer Name</label>
+                            <input type="text" name="authorized_officer" class="form-control" placeholder="The person signing the EA form">
+                        </div>
+                        <div>
+                            <label class="form-label fw-semibold small">Designation</label>
+                            <input type="text" name="officer_designation" class="form-control" placeholder="e.g. Director">
+                        </div>
+                        <div id="companyFormMessage" class="mt-3"></div>
+                    </div>
+                    <div class="modal-footer bg-light border-0">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-dark px-4">Save Company Info</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div> -->
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // FORM SUBMISSION LOGIC
+        document.getElementById('employeeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                full_name: formData.get('full_name'),
+                company_id: parseInt(formData.get('company_id')),
+                job_title: formData.get('job_title') || "",
+                ic_number: formData.get('ic_number') || "",
+                tin_number: formData.get('tin_number') || "",
+                basic_salary: parseFloat(formData.get('basic_salary')),
+                fixed_allowance: parseFloat(formData.get('fixed_allowance')) || 0,
+                profit_sharing: parseFloat(formData.get('profit_sharing')) || 0,
+                is_malaysian: formData.has('is_malaysian'),
+                age: formData.get('age') ? parseInt(formData.get('age')) : 0,
+                is_over_60: formData.has('is_over_60'),
+                kwsp_number: formData.get('kwsp_number') || "",  
+                socso_number: formData.get('socso_number') || "", 
+                join_date: formData.get('join_date') || ""   
+            };
+
+            const msg = document.getElementById('formMessage');
+            msg.innerHTML = '<div class="text-primary small">Saving details...</div>';
+
+            try {
+                const res = await fetch('/employees/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    msg.innerHTML = '<div class="alert alert-success py-2 small">Success! Reloading...</div>';
+                    setTimeout(() => location.reload(), 800);
+                } else {
+                    const err = await res.json();
+                    console.log(err); // <-- check in console
+                    msg.innerHTML = `<div class="alert alert-danger py-2 small">Error: ${JSON.stringify(err.detail)}</div>`;
+                }
+            } catch (e) {
+                msg.innerHTML = '<div class="alert alert-danger py-2 small">Server Connection Error.</div>';
+            }
+        });
+
+        // DELETE LOGIC
+        async function deleteEmployee(empId, empName) {
+            if (!confirm(`Are you sure you want to delete ${empName}? This will remove all their payroll records.`)) return;
+            try {
+                const res = await fetch(`/employees/${empId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    const row = document.getElementById(`emp-row-${empId}`);
+                    if(row) row.remove();
+                } else {
+                    alert("Failed to delete employee.");
+                }
+            } catch (e) { alert("Error deleting employee."); }
+        }
+
+        // EDIT EMPLOYEE LOGIC
+        async function saveEmployeeEdit(e, empId) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            const data = {
+                full_name: formData.get('full_name'),
+                company_name: formData.get('company_name'),
+                job_title: formData.get('job_title'),
+                ic_number: formData.get('ic_number'),
+                tin_number: formData.get('tin_number'),
+                basic_salary: parseFloat(formData.get('basic_salary')),
+                fixed_allowance: parseFloat(formData.get('fixed_allowance')) || 0,
+                is_malaysian: formData.has('is_malaysian'),
+                kwsp_number: formData.get('kwsp_number') || "",  
+                socso_number: formData.get('socso_number') || "", 
+                join_date: formData.get('join_date') || ""       
+            };
+
+            try {
+                const res = await fetch(`/employees/${empId}/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(data)
+                });
+
+                if (res.ok) {
+                    location.reload();
+                } else {
+                    alert("Failed to update employee.");
+                }
+            } catch (err) {
+                alert("Error updating employee.");
+            }
+        }
+
+        // // COMPANY FORM SUBMISSION
+        // document.getElementById('companyForm').addEventListener('submit', async function(e) {
+        //     e.preventDefault();
+        //     const formData = new FormData(e.target);
+        //     const data = Object.fromEntries(formData.entries());
+
+        //     const msg = document.getElementById('companyFormMessage');
+        //     msg.innerHTML = '<div class="text-primary small">Saving company profile...</div>';
+
+        //     try {
+        //         const res = await fetch('/companies/', {
+        //             method: 'POST',
+        //             headers: { 'Content-Type': 'application/json' },
+        //             body: JSON.stringify(data)
+        //         });
+
+        //         if (res.ok) {
+        //             msg.innerHTML = '<div class="alert alert-success py-2 small">Company Saved!</div>';
+        //             setTimeout(() => location.reload(), 800);
+        //         } else {
+        //             const err = await res.json();
+        //             msg.innerHTML = `<div class="alert alert-danger py-2 small">Error: ${err.detail || 'Could not save'}</div>`;
+        //         }
+        //         } catch (e) {
+        //             msg.innerHTML = '<div class="alert alert-danger py-2 small">Server Connection Error.</div>';
+        //         }
+        // });
+    </script>
+</body>
+</html>
