@@ -140,7 +140,7 @@
                                                     </div>
                                         
                                                     <div class="col-md-6">
-                                                        <label class="form-label fw-semibold small">Job Title</label>
+                                                        <label class="form-label fw-semibold small">Job Title (Jawatan)</label>
                                                         <input type="text" name="job_title" class="form-control" value="{{ emp.job_title or '' }}">
                                                     </div>
                                                     <div class="col-md-6">
@@ -166,12 +166,12 @@
                                                     </div>
                                         
                                                     <div class="col-md-6">
-                                                        <label class="form-label fw-semibold small">Marital Status</label>
+                                                        <label class="form-label fw-semibold small">Marital Status (Perkahwinan)</label>
                                                         <select name="marital_status" class="form-select">
-                                                            <option value="Single" {% if emp.marital_status == 'Single' %}selected{% endif %}>Single</option>
-                                                            <option value="Married" {% if emp.marital_status == 'Married' %}selected{% endif %}>Married</option>
-                                                            <option value="Divorced" {% if emp.marital_status == 'Divorced' %}selected{% endif %}>Divorced</option>
-                                                            <option value="Widowed" {% if emp.marital_status == 'Widowed' %}selected{% endif %}>Widowed</option>
+                                                            <option value="Single" {% if emp.marital_status == 'Single (Bujang)' %}selected{% endif %}>Single</option>
+                                                            <option value="Married" {% if emp.marital_status == 'Married (Berkahwin)' %}selected{% endif %}>Married</option>
+                                                            <option value="Divorced" {% if emp.marital_status == 'Divorced (Bercerai)' %}selected{% endif %}>Divorced</option>
+                                                            <option value="Widowed" {% if emp.marital_status == 'Widowed (Duda)' %}selected{% endif %}>Widowed</option>
                                                         </select>
                                                     </div>
                                                     <div class="col-md-6">
@@ -180,22 +180,22 @@
                                                     </div>
                                         
                                                     <div class="col-md-6">
-                                                        <label class="form-label fw-semibold small">Join Date</label>
+                                                        <label class="form-label fw-semibold small">Join Date (Mula Kerja)</label>
                                                         <input type="date" name="join_date" class="form-control" value="{{ emp.join_date or '' }}">
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <label class="form-label fw-semibold small">End Date (Resigned)</label>
+                                                        <label class="form-label fw-semibold small">End Date (Berhenti Kerja)</label>
                                                         <input type="date" name="end_date" class="form-control" value="{{ emp.end_date or '' }}">
                                                     </div>
                                         
                                                     <div class="col-md-6">
-                                                        <label class="form-label fw-semibold small">Fixed Allowance</label>
+                                                        <label class="form-label fw-semibold small">Fixed Allowance (Elaun Tetap)</label>
                                                         <input type="number" name="fixed_allowance" class="form-control" step="0.01" value="{{ emp.fixed_allowance or 0 }}">
                                                     </div>
-                                                    <div class="col-md-6">
+                                                    <!-- <div class="col-md-6">
                                                         <label class="form-label fw-semibold small">Profit Sharing</label>
                                                         <input type="number" name="profit_sharing" class="form-control" step="0.01" value="{{ emp.profit_sharing or 0 }}">
-                                                    </div>
+                                                    </div> -->
                                         
                                                     <div class="col-12">
                                                         <div class="form-check">

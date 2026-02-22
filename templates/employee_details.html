@@ -204,11 +204,11 @@
                         </div>
                         <div class="row g-2 mb-3">
                             <div class="col-6">
-                                <label class="form-label small fw-bold text-primary">Add. Allowance</label>
+                                <label class="form-label small fw-bold text-primary">Add. Allowance (Elaun Tambahan)</label>
                                 <input type="number" name="additional_allowance" class="form-control" step="0.01" value="0">
                             </div>
                             <div class="col-6">
-                                <label class="form-label small fw-bold text-danger">Salary Advanced</label>
+                                <label class="form-label small fw-bold text-danger">Salary Advanced(Pendahuluan Gaji)</label>
                                 <input type="number" name="salary_advanced" class="form-control" step="0.01" value="0" placeholder="RM 0.00">
                             </div>
                         </div>
@@ -217,13 +217,13 @@
                                 <label class="form-label small fw-bold">Bonus</label>
                                 <input type="number" name="bonus" class="form-control" step="0.01" value="0">
                             </div>
-                            <div class="col-6">
+                            <!-- <div class="col-6">
                                 <label class="form-label small fw-bold">Profit Sharing</label>
                                 <input type="number" name="profit_sharing" class="form-control" step="0.01" value="{{ employee.profit_sharing or 0 }}">
-                            </div>
+                            </div> -->
                         </div>
                         <button type="submit" class="btn btn-warning w-100 fw-bold py-2" id="submitBtn">
-                            <span class="btn-text">Generate & Save Payroll</span>
+                            <span class="btn-text">Save Record</span>
                             <span class="spinner-container">
                                 <span class="spinner-border spinner-border-sm"></span> Saving...
                             </span>
@@ -355,7 +355,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-muted">Marital Status</label>
+                            <label class="form-label small fw-bold text-muted">Marital Status (Perkahwinan)</label>
                             <select name="marital_status" class="form-select">
                                 <option value="Single" {% if employee.marital_status == 'Single' %}selected{% endif %}>Single</option>
                                 <option value="Married" {% if employee.marital_status == 'Married' %}selected{% endif %}>Married</option>
@@ -370,12 +370,12 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-muted">Join Date</label>
+                            <label class="form-label small fw-bold text-muted">Join Date (Mula Kerja)</label>
                             <input type="date" name="join_date" class="form-control" value="{{ employee.join_date.strftime('%Y-%m-%d') if employee.join_date else '' }}">
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-muted">End Date (Resigned)</label>
+                            <label class="form-label small fw-bold text-muted">End Date (Berhenti Kerja)</label>
                             <input type="date" name="end_date" class="form-control" value="{{ employee.end_date.strftime('%Y-%m-%d') if employee.end_date else '' }}">
                         </div>
 
@@ -385,14 +385,14 @@
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label small fw-bold text-muted">Fixed Allowance</label>
+                            <label class="form-label small fw-bold text-muted">Fixed Allowance (Elaun Tetap)</label>
                             <input type="number" name="fixed_allowance" class="form-control" step="0.01" value="{{ employee.fixed_allowance or 0 }}">
                         </div>
 
-                        <div class="col-md-4">
+                        <!-- <div class="col-md-4">
                             <label class="form-label small fw-bold text-muted">Profit Sharing</label>
                             <input type="number" name="profit_sharing" class="form-control" step="0.01" value="{{ employee.profit_sharing or 0 }}">
-                        </div>
+                        </div> -->
 
                         <div class="col-12 mt-2">
                             <div class="form-check">
