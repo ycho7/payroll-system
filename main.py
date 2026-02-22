@@ -513,6 +513,7 @@ async def company_cost_dashboard(request: Request, company_id: int, db: Session 
             "period": r.month_year,
             "basic": r.basic_salary,
             "allowance": combined_allowance, # Summed value
+            "bonus": r.bonus or 0,  # MAKE SURE THIS LINE EXISTS
             "profit_sharing": r.profit_sharing or 0,
             "kwsp_er": r.epf_employer,
             "socso_eis_er": r.socso_employer + r.eis_employer,

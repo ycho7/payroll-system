@@ -143,6 +143,10 @@
             <div class="metric-value text-dark" id="sum-allow">RM 0.00</div>
         </div></div>
         <div class="col-md"><div class="metric-card">
+            <div class="metric-label text-warning">Bonus</div>
+            <div class="metric-value text-dark" id="sum-bonus">RM 0.00</div>
+        </div></div>
+        <div class="col-md"><div class="metric-card">
             <div class="metric-label text-primary">Profit Sharing</div>
             <div class="metric-value text-primary" id="sum-profit">RM 0.00</div>
         </div></div>
@@ -164,7 +168,7 @@
                     <th>Employee Name</th>
                     <th class="text-end">Basic (RM)</th>
                     <th class="text-end">Allowance (RM)</th>
-                    <th class="text-end">Profit (RM)</th>
+                    <th class="text-end">Bonus (RM)</th> <th class="text-end">Profit (RM)</th>
                     <th class="text-end">KWSP (ER)</th>
                     <th class="text-end">Socso-EIS (ER)</th>
                     <th class="text-end pe-3">Total CTC</th>
@@ -177,6 +181,7 @@
                     <td class="fw-bold">{{ r.name }}</td>
                     <td class="text-end">{{ "{:,.2f}".format(r.basic) }}</td>
                     <td class="text-end">{{ "{:,.2f}".format(r.allowance) }}</td>
+                    <td class="text-end">{{ "{:,.2f}".format(r.bonus or 0) }}</td> 
                     <td class="text-end">{{ "{:,.2f}".format(r.profit_sharing) }}</td>
                     <td class="text-end">{{ "{:,.2f}".format(r.kwsp_er) }}</td>
                     <td class="text-end">{{ "{:,.2f}".format(r.socso_eis_er) }}</td>
@@ -227,23 +232,30 @@ $(document).ready(function() {
     table.buttons().container().appendTo('#export-btn-container');
 
     function calculateLiveTotals(api) {
-        let sums = { basic: 0, allow: 0, profit: 0, stat: 0, ctc: 0 };
-        api.rows({ search: 'applied' }).data().each(function(row) {
-            const clean = (val) => parseFloat(val.replace(/[^0-9.]/g, '')) || 0;
-            sums.basic += clean(row[2]);
-            sums.allow += clean(row[3]);
-            sums.profit += clean(row[4]);
-            sums.stat += (clean(row[5]) + clean(row[6]));
-            sums.ctc += clean(row[7]);
-        });
+    // Added 'bonus' to the sums object
+    let sums = { basic: 0, allow: 0, bonus: 0, profit: 0, stat: 0, ctc: 0 };
+    
+    api.rows({ search: 'applied' }).data().each(function(row) {
+        const clean = (val) => parseFloat(val.replace(/[^0-9.]/g, '')) || 0;
+        
+        sums.basic  += clean(row[2]);
+        sums.allow  += clean(row[3]);
+        sums.bonus  += clean(row[4]); // New Bonus column
+        sums.profit += clean(row[5]); // Shifted from index 4
+        // Statutory index shifted from [5]+[6] to [6]+[7]
+        sums.stat   += (clean(row[6]) + clean(row[7])); 
+        sums.ctc    += clean(row[8]); // Total CTC shifted to index 8
+    });
 
-        const fmt = (num) => "RM " + num.toLocaleString(undefined, {minimumFractionDigits: 2});
-        $('#sum-basic').text(fmt(sums.basic));
-        $('#sum-allow').text(fmt(sums.allow));
-        $('#sum-profit').text(fmt(sums.profit));
-        $('#sum-stat').text(fmt(sums.stat));
-        $('#sum-ctc').text(fmt(sums.ctc));
-    }
+    const fmt = (num) => "RM " + num.toLocaleString(undefined, {minimumFractionDigits: 2});
+    
+    $('#sum-basic').text(fmt(sums.basic));
+    $('#sum-allow').text(fmt(sums.allow));
+    $('#sum-bonus').text(fmt(sums.bonus)); // Update Bonus Metric
+    $('#sum-profit').text(fmt(sums.profit));
+    $('#sum-stat').text(fmt(sums.stat));
+    $('#sum-ctc').text(fmt(sums.ctc));
+}
 });
 </script>
 
