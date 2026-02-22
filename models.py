@@ -17,8 +17,12 @@ class Employee(Base):
     is_malaysian = Column(Boolean, default=True)
     is_over_60 = Column(Boolean, default=False)
 
+    # ✅ NEW: Marital Status & Dependents for PCB/EA Form
+    marital_status = Column(String, default="Single") # Store as String: Single, Married, etc.
+    number_of_kids = Column(Integer, default=0)
 
     join_date = Column(Date, default=date.today)   # ✅ NEW
+    end_date = Column(Date, nullable=True) # ✅ NEW: For resignation/contract end
     kwsp_number = Column(String)                    # ✅ NEW
     socso_number = Column(String)                   # ✅ NEW
 

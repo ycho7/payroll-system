@@ -300,6 +300,8 @@ def delete_employee(emp_id: int, db: Session = Depends(get_db)):
         return {"message": "Employee deleted successfully", "employee_id": emp_id}
     raise HTTPException(status_code=500, detail="Failed to delete employee")
 
+from datetime import datetime
+
 @app.post("/employees/{emp_id}/update")
 async def update_employee(
     emp_id: int,
@@ -310,47 +312,58 @@ async def update_employee(
     tin_number: str = Form(None),
     basic_salary: float = Form(...),
     fixed_allowance: float = Form(...),
+    profit_sharing: float = Form(0.0), # Added consistency with your model
     is_malaysian: bool = Form(False),
     kwsp_number: str = Form(None),
     socso_number: str = Form(None),
     join_date: str = Form(None),
+    # ✅ NEW FORM FIELDS
+    marital_status: str = Form("Single"),
+    number_of_kids: int = Form(0),
+    end_date: str = Form(None),
     db: Session = Depends(get_db)
 ):
     employee = crud.get_employee(db, employee_id=emp_id)
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
     
-    # Convert join_date string to datetime.date
-    if join_date:
-        try:
+    # --- Date Conversion Logic ---
+    try:
+        if join_date:
             employee.join_date = datetime.strptime(join_date, "%Y-%m-%d").date()
-        except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid join_date format. Use YYYY-MM-DD")
-    else:
-        employee.join_date = None
+        else:
+            employee.join_date = None
+            
+        if end_date: # ✅ Handle End Date
+            employee.end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+        else:
+            employee.end_date = None
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
 
-    # Update fields
+    # --- Update Personal & Family Info ---
     employee.full_name = full_name
-    employee.job_title = job_title
-    employee.company_name = company_name
+    employee.marital_status = marital_status # ✅ Updated
+    employee.number_of_kids = number_of_kids # ✅ Updated
     employee.ic_number = ic_number
+    employee.tin_number = tin_number
     employee.kwsp_number = kwsp_number
     employee.socso_number = socso_number
+    employee.is_malaysian = is_malaysian
 
+    # --- Age Logic ---
     employee.age = calculate_age_from_ic(ic_number)
+    employee.is_over_60 = True if employee.age >= 60 else False
 
-    if employee.age >= 60:
-        employee.is_over_60 = True
-    else:
-        employee.is_over_60 = False
-
-    employee.tin_number = tin_number
+    # --- Salary & Employment ---
+    employee.job_title = job_title
+    employee.company_name = company_name # Ensure your DB column matches this (some models use company_id)
     employee.basic_salary = basic_salary
     employee.fixed_allowance = fixed_allowance
-    employee.is_malaysian = is_malaysian
+    employee.profit_sharing = profit_sharing
     
     db.commit()
-    return {"status": "success", "message": "Updated successfully"}
+    return {"status": "success", "message": "Employee details updated successfully"}
 
 @app.post("/payroll-records/{record_id}/edit")
 async def edit_payroll_record(

@@ -89,9 +89,21 @@
                     </div>
                     <h1 class="h2 fw-bold mb-1">{{ employee.full_name }}</h1>
                     <p class="text-primary fw-semibold mb-2">{{ employee.job_title or 'General Staff' }}</p>
+                    
                     <div class="d-flex flex-wrap gap-2 mb-2">
                         <span class="badge bg-primary-subtle text-primary p-2">{{ employee.company.name if employee.company else 'No Company' }}</span>
                         <span class="badge bg-secondary-subtle text-secondary p-2">AGE: {{ employee.age or 'N/A' }}</span>
+                        
+                        <span class="badge bg-dark-subtle text-dark p-2">
+                            <i class="bi bi-heart-fill me-1"></i> {{ (employee.marital_status or 'Single')|upper }}
+                        </span>
+                
+                        {% if employee.number_of_kids and employee.number_of_kids > 0 %}
+                        <span class="badge bg-success-subtle text-success p-2">
+                            <i class="bi bi-people-fill me-1"></i> KIDS: {{ employee.number_of_kids }}
+                        </span>
+                        {% endif %}
+                
                         {% if employee.is_over_60 %}
                             <span class="badge bg-warning-subtle text-warning p-2">
                                 <i class="bi bi-person-up me-1"></i>SENIOR (60+)
@@ -100,6 +112,12 @@
                             <span class="badge bg-info-subtle text-info p-2">
                                 <i class="bi bi-person me-1"></i>STANDARD (<60)
                             </span>
+                        {% endif %}
+                
+                        {% if employee.end_date %}
+                        <span class="badge bg-danger text-white p-2">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> RESIGNED: {{ employee.end_date.strftime('%d %b %Y') }}
+                        </span>
                         {% endif %}
                     </div>
                 </div>
@@ -300,74 +318,83 @@
                 </div>
                 <div class="modal-body text-start">
                     <div class="row g-3">
-                        <!-- Full Name -->
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-muted">Full Name</label>
                             <input type="text" name="full_name" class="form-control" value="{{ employee.full_name }}" required>
                         </div>
 
-                        <!-- Job Title -->
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-muted">Job Title</label>
                             <input type="text" name="job_title" class="form-control" value="{{ employee.job_title or '' }}">
                         </div>
 
-                        <!-- Company (readonly) -->
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-muted">Company</label>
                             <input type="text" class="form-control" value="{{ employee.company.name }}" disabled>
+                            <input type="hidden" name="company_name" value="{{ employee.company.name }}">
                         </div>
 
-                        <!-- Join Date -->
-                        <div class="col-md-6">
-                            <label class="form-label small fw-bold text-muted">Join Date</label>
-                            <input type="date" name="join_date" class="form-control" value="{{ employee.join_date.strftime('%Y-%m-%d') if employee.join_date else '' }}">
-                        </div>
-
-                        <!-- IC / Passport -->
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-muted">IC / Passport Number</label>
                             <input type="text" name="ic_number" class="form-control" value="{{ employee.ic_number or '' }}">
                         </div>
 
-                        <!-- TIN Number -->
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label small fw-bold text-muted">TIN Number (LHDN)</label>
                             <input type="text" name="tin_number" class="form-control" value="{{ employee.tin_number or '' }}">
                         </div>
 
-                        <!-- KWSP Number -->
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label small fw-bold text-muted">KWSP Number</label>
                             <input type="text" name="kwsp_number" class="form-control" value="{{ employee.kwsp_number or '' }}">
                         </div>
 
-                        <!-- SOCSO Number -->
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label small fw-bold text-muted">SOCSO Number</label>
                             <input type="text" name="socso_number" class="form-control" value="{{ employee.socso_number or '' }}">
                         </div>
 
-                        <!-- Basic Salary -->
                         <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Marital Status</label>
+                            <select name="marital_status" class="form-select">
+                                <option value="Single" {% if employee.marital_status == 'Single' %}selected{% endif %}>Single</option>
+                                <option value="Married" {% if employee.marital_status == 'Married' %}selected{% endif %}>Married</option>
+                                <option value="Divorced" {% if employee.marital_status == 'Divorced' %}selected{% endif %}>Divorced</option>
+                                <option value="Widowed" {% if employee.marital_status == 'Widowed' %}selected{% endif %}>Widowed</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Number of Kids</label>
+                            <input type="number" name="number_of_kids" class="form-control" value="{{ employee.number_of_kids or 0 }}" min="0">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Join Date</label>
+                            <input type="date" name="join_date" class="form-control" value="{{ employee.join_date.strftime('%Y-%m-%d') if employee.join_date else '' }}">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">End Date (Resigned)</label>
+                            <input type="date" name="end_date" class="form-control" value="{{ employee.end_date.strftime('%Y-%m-%d') if employee.end_date else '' }}">
+                        </div>
+
+                        <div class="col-md-4">
                             <label class="form-label small fw-bold text-muted">Basic Salary (RM)</label>
                             <input type="number" name="basic_salary" class="form-control" step="0.01" value="{{ employee.basic_salary }}">
                         </div>
 
-                        <!-- Fixed Allowance -->
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label small fw-bold text-muted">Fixed Allowance</label>
                             <input type="number" name="fixed_allowance" class="form-control" step="0.01" value="{{ employee.fixed_allowance or 0 }}">
                         </div>
 
-                        <!-- Profit Sharing -->
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label small fw-bold text-muted">Profit Sharing</label>
                             <input type="number" name="profit_sharing" class="form-control" step="0.01" value="{{ employee.profit_sharing or 0 }}">
                         </div>
 
-                        <!-- Malaysian Citizen -->
-                        <div class="col-md-6 d-flex align-items-center mt-2">
+                        <div class="col-12 mt-2">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="is_malaysian" id="editCheck{{ employee.id }}" {% if employee.is_malaysian %}checked{% endif %}>
                                 <label class="form-check-label small fw-medium" for="editCheck{{ employee.id }}">Malaysian Citizen / PR</label>
@@ -393,37 +420,54 @@
     });
 
     async function saveEmployeeEdit(event, empId) {
-        event.preventDefault();
-        const formData = new FormData(event.target);
+    event.preventDefault();
+    const formData = new FormData(event.target);
 
-        // If using disabled input for company, make sure a hidden input exists
-        const data = {
+    // Map all fields including the new 2026/EA Form requirements
+    const data = {
             full_name: formData.get('full_name'),
             job_title: formData.get('job_title') || "",
             company_name: formData.get('company_name'), 
             ic_number: formData.get('ic_number') || "",
             tin_number: formData.get('tin_number') || "",
-            basic_salary: formData.get('basic_salary') || "0",
-            fixed_allowance: formData.get('fixed_allowance') || "0",
-            is_malaysian: formData.has('is_malaysian') ? "true" : "false",
             kwsp_number: formData.get('kwsp_number') || "",
             socso_number: formData.get('socso_number') || "",
-            join_date: formData.get('join_date') || ""
+            
+            // ✅ NEW: Family & Tax Info
+            marital_status: formData.get('marital_status') || "Single",
+            number_of_kids: formData.get('number_of_kids') || "0",
+            
+            // ✅ NEW: Dates
+            join_date: formData.get('join_date') || "",
+            end_date: formData.get('end_date') || "", // Added resignation/end date
+            
+            // Salary Info
+            basic_salary: formData.get('basic_salary') || "0",
+            fixed_allowance: formData.get('fixed_allowance') || "0",
+            profit_sharing: formData.get('profit_sharing') || "0", // Added profit sharing
+            
+            // Checkbox logic: FastAPI Form(...) usually expects "true"/"false" strings or 1/0
+            is_malaysian: formData.has('is_malaysian') ? "true" : "false"
         };
 
         try {
             const res = await fetch(`/employees/${empId}/update`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                // URLSearchParams handles the "Form(...)" expectation on the FastAPI side
                 body: new URLSearchParams(data)
             });
-            if (res.ok) location.reload();
-            else {
+
+            if (res.ok) {
+                location.reload();
+            } else {
                 const err = await res.json();
+                console.error("Update Error:", err);
                 alert("Failed to update: " + (err.detail || "Unknown error"));
             }
         } catch (e) {
-            alert("Error updating");
+            console.error("Network Error:", e);
+            alert("Error updating employee. Check console for details.");
         }
     }
 

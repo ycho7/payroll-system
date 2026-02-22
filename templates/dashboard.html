@@ -127,6 +127,7 @@
                                                         <label class="form-label fw-semibold small">Full Name</label>
                                                         <input type="text" name="full_name" class="form-control" value="{{ emp.full_name }}" required>
                                                     </div>
+                                        
                                                     <div class="col-12">
                                                         <label class="form-label fw-semibold small">Company</label>
                                                         <select name="company_name" class="form-select">
@@ -137,6 +138,7 @@
                                                             {% endfor %}
                                                         </select>
                                                     </div>
+                                        
                                                     <div class="col-md-6">
                                                         <label class="form-label fw-semibold small">Job Title</label>
                                                         <input type="text" name="job_title" class="form-control" value="{{ emp.job_title or '' }}">
@@ -145,36 +147,56 @@
                                                         <label class="form-label fw-semibold small">Basic Salary (RM)</label>
                                                         <input type="number" name="basic_salary" class="form-control" step="0.01" value="{{ emp.basic_salary }}" required>
                                                     </div>
+                                        
                                                     <div class="col-md-6">
                                                         <label class="form-label fw-semibold small">IC Number</label>
                                                         <input type="text" name="ic_number" class="form-control" value="{{ emp.ic_number or '' }}">
                                                     </div>
-                                                    
                                                     <div class="col-md-6">
                                                         <label class="form-label fw-semibold small">TIN Number (LHDN)</label>
                                                         <input type="text" name="tin_number" class="form-control" value="{{ emp.tin_number or '' }}">
                                                     </div>
-                                                    
                                                     <div class="col-md-6">
                                                         <label class="form-label fw-semibold small">KWSP Number</label>
                                                         <input type="text" name="kwsp_number" class="form-control" value="{{ emp.kwsp_number or '' }}">
                                                     </div>
-                                                    
                                                     <div class="col-md-6">
                                                         <label class="form-label fw-semibold small">SOCSO Number</label>
                                                         <input type="text" name="socso_number" class="form-control" value="{{ emp.socso_number or '' }}">
                                                     </div>
-                                                    
+                                        
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small">Marital Status</label>
+                                                        <select name="marital_status" class="form-select">
+                                                            <option value="Single" {% if emp.marital_status == 'Single' %}selected{% endif %}>Single</option>
+                                                            <option value="Married" {% if emp.marital_status == 'Married' %}selected{% endif %}>Married</option>
+                                                            <option value="Divorced" {% if emp.marital_status == 'Divorced' %}selected{% endif %}>Divorced</option>
+                                                            <option value="Widowed" {% if emp.marital_status == 'Widowed' %}selected{% endif %}>Widowed</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small">Number of Kids</label>
+                                                        <input type="number" name="number_of_kids" class="form-control" value="{{ emp.number_of_kids or 0 }}" min="0">
+                                                    </div>
+                                        
                                                     <div class="col-md-6">
                                                         <label class="form-label fw-semibold small">Join Date</label>
                                                         <input type="date" name="join_date" class="form-control" value="{{ emp.join_date or '' }}">
                                                     </div>
-                                                    
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small">End Date (Resigned)</label>
+                                                        <input type="date" name="end_date" class="form-control" value="{{ emp.end_date or '' }}">
+                                                    </div>
+                                        
                                                     <div class="col-md-6">
                                                         <label class="form-label fw-semibold small">Fixed Allowance</label>
                                                         <input type="number" name="fixed_allowance" class="form-control" step="0.01" value="{{ emp.fixed_allowance or 0 }}">
                                                     </div>
-                                                    
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold small">Profit Sharing</label>
+                                                        <input type="number" name="profit_sharing" class="form-control" step="0.01" value="{{ emp.profit_sharing or 0 }}">
+                                                    </div>
+                                        
                                                     <div class="col-12">
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox" name="is_malaysian" id="editMaly{{ emp.id }}" {% if emp.is_malaysian %}checked{% endif %}>
@@ -226,11 +248,12 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Job Title / Position</label>
-                                <input type="text" name="job_title" class="form-control" placeholder="e.g. Staff">
+                                <input type="text" name="job_title" class="form-control" placeholder="e.g. Manager">
                             </div>
+    
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">IC Number</label>
-                                <input type="text" name="ic_number" class="form-control">
+                                <input type="text" name="ic_number" class="form-control" placeholder="e.g. 900101141234">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">TIN Number (LHDN)</label>
@@ -238,25 +261,42 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">KWSP Number</label>
-                                <input type="text" name="kwsp_number" class="form-control" placeholder="e.g. 1234567890">
+                                <input type="text" name="kwsp_number" class="form-control">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">SOCSO Number</label>
-                                <input type="text" name="socso_number" class="form-control" placeholder="e.g. 987654321">
+                                <input type="text" name="socso_number" class="form-control">
                             </div>
-                            
+    
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Marital Status</label>
+                                <select name="marital_status" class="form-select">
+                                    <option value="Single" selected>Single</option>
+                                    <option value="Married">Married</option>
+                                    <option value="Divorced">Divorced</option>
+                                    <option value="Widowed">Widowed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Number of Kids (for PCB)</label>
+                                <input type="number" name="number_of_kids" class="form-control" min="0" value="0">
+                            </div>
+    
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Join Date</label>
                                 <input type="date" name="join_date" class="form-control">
                             </div>
                             <div class="col-md-6">
+                                <label class="form-label fw-semibold small">End Date (Optional)</label>
+                                <input type="date" name="end_date" class="form-control">
+                            </div>
+    
+                            <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Company</label>
                                 <select name="company_id" class="form-select" required>
                                     <option value="" selected disabled>Choose a company...</option>
                                     {% for company in companies %}
-                                    <option value="{{ company.id }}">
-                                        {{ company.name }}
-                                    </option>
+                                    <option value="{{ company.id }}">{{ company.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -264,14 +304,15 @@
                                 <label class="form-label fw-semibold small">Basic Salary (RM)</label>
                                 <input type="number" name="basic_salary" class="form-control" min="1700" value="1700" step="0.01" required>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Fixed Allowance</label>
                                 <input type="number" name="fixed_allowance" class="form-control" value="0">
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label class="form-label fw-semibold small">Profit Sharing</label>
                                 <input type="number" name="profit_sharing" class="form-control" value="0">
                             </div>
+    
                             <div class="col-12 border-top pt-3 mt-3">
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" name="is_malaysian" id="malyCheck" checked>
@@ -343,49 +384,61 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // FORM SUBMISSION LOGIC
-        document.getElementById('employeeForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const data = {
-                full_name: formData.get('full_name'),
-                company_id: parseInt(formData.get('company_id')),
-                job_title: formData.get('job_title') || "",
-                ic_number: formData.get('ic_number') || "",
-                tin_number: formData.get('tin_number') || "",
-                basic_salary: parseFloat(formData.get('basic_salary')),
-                fixed_allowance: parseFloat(formData.get('fixed_allowance')) || 0,
-                profit_sharing: parseFloat(formData.get('profit_sharing')) || 0,
-                is_malaysian: formData.has('is_malaysian'),
-                age: formData.get('age') ? parseInt(formData.get('age')) : 0,
-                is_over_60: formData.has('is_over_60'),
-                kwsp_number: formData.get('kwsp_number') || "",  
-                socso_number: formData.get('socso_number') || "", 
-                join_date: formData.get('join_date') || ""   
-            };
+    // FORM SUBMISSION LOGIC
+    document.getElementById('employeeForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        
+        // Construct the data object including the new family and end date fields
+        const data = {
+            full_name: formData.get('full_name'),
+            company_id: parseInt(formData.get('company_id')),
+            job_title: formData.get('job_title') || "",
+            ic_number: formData.get('ic_number') || "",
+            tin_number: formData.get('tin_number') || "",
+            
+            // ✅ NEW: Family & Tax Info
+            marital_status: formData.get('marital_status') || "Single",
+            number_of_kids: parseInt(formData.get('number_of_kids')) || 0,
+            
+            basic_salary: parseFloat(formData.get('basic_salary')),
+            fixed_allowance: parseFloat(formData.get('fixed_allowance')) || 0,
+            profit_sharing: parseFloat(formData.get('profit_sharing')) || 0,
+            is_malaysian: formData.has('is_malaysian'),
+            age: formData.get('age') ? parseInt(formData.get('age')) : 0,
+            is_over_60: formData.has('is_over_60'),
+            kwsp_number: formData.get('kwsp_number') || "",  
+            socso_number: formData.get('socso_number') || "", 
+            
+            // ✅ DATES
+            join_date: formData.get('join_date') || "",
+            end_date: formData.get('end_date') || "" // ✅ NEW: Capture end date
+        };
 
-            const msg = document.getElementById('formMessage');
-            msg.innerHTML = '<div class="text-primary small">Saving details...</div>';
+        const msg = document.getElementById('formMessage');
+        msg.innerHTML = '<div class="text-primary small">Saving details...</div>';
 
-            try {
-                const res = await fetch('/employees/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
+        try {
+            const res = await fetch('/employees/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
 
-                if (res.ok) {
-                    msg.innerHTML = '<div class="alert alert-success py-2 small">Success! Reloading...</div>';
-                    setTimeout(() => location.reload(), 800);
-                } else {
-                    const err = await res.json();
-                    console.log(err); // <-- check in console
-                    msg.innerHTML = `<div class="alert alert-danger py-2 small">Error: ${JSON.stringify(err.detail)}</div>`;
-                }
-            } catch (e) {
-                msg.innerHTML = '<div class="alert alert-danger py-2 small">Server Connection Error.</div>';
+            if (res.ok) {
+                msg.innerHTML = '<div class="alert alert-success py-2 small">Success! Reloading...</div>';
+                setTimeout(() => location.reload(), 800);
+            } else {
+                const err = await res.json();
+                console.error(err); 
+                // Better error display for Pydantic validation errors
+                let errorMsg = err.detail ? JSON.stringify(err.detail) : "Validation Error";
+                msg.innerHTML = `<div class="alert alert-danger py-2 small">Error: ${errorMsg}</div>`;
             }
-        });
+        } catch (e) {
+            msg.innerHTML = '<div class="alert alert-danger py-2 small">Server Connection Error.</div>';
+        }
+    });
 
         // DELETE LOGIC
         async function deleteEmployee(empId, empName) {
@@ -402,38 +455,55 @@
         }
 
         // EDIT EMPLOYEE LOGIC
+        // EDIT EMPLOYEE LOGIC
         async function saveEmployeeEdit(e, empId) {
             e.preventDefault();
             const form = e.target;
             const formData = new FormData(form);
+            
+            // Map all fields including the new 2026/EA Form requirements
             const data = {
                 full_name: formData.get('full_name'),
                 company_name: formData.get('company_name'),
                 job_title: formData.get('job_title'),
                 ic_number: formData.get('ic_number'),
                 tin_number: formData.get('tin_number'),
+                kwsp_number: formData.get('kwsp_number') || "",
+                socso_number: formData.get('socso_number') || "",
+                
+                // ✅ NEW: Family & Tax Info
+                marital_status: formData.get('marital_status') || "Single",
+                number_of_kids: parseInt(formData.get('number_of_kids')) || 0,
+                
+                // ✅ NEW: Dates
+                join_date: formData.get('join_date') || "",
+                end_date: formData.get('end_date') || "",
+                
+                // Salary Info
                 basic_salary: parseFloat(formData.get('basic_salary')),
                 fixed_allowance: parseFloat(formData.get('fixed_allowance')) || 0,
-                is_malaysian: formData.has('is_malaysian'),
-                kwsp_number: formData.get('kwsp_number') || "",  
-                socso_number: formData.get('socso_number') || "", 
-                join_date: formData.get('join_date') || ""       
+                profit_sharing: parseFloat(formData.get('profit_sharing')) || 0, // ✅ Added
+                is_malaysian: formData.has('is_malaysian') // checkbox returns true if present
             };
 
             try {
                 const res = await fetch(`/employees/${empId}/update`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    // URLSearchParams handles the "Form(...)" expectation on the FastAPI side
                     body: new URLSearchParams(data)
                 });
 
                 if (res.ok) {
                     location.reload();
                 } else {
-                    alert("Failed to update employee.");
+                    const errData = await res.json();
+                    console.error("Update Error:", errData);
+                    alert("Failed to update employee: " + (errData.detail || "Unknown error"));
                 }
             } catch (err) {
-                alert("Error updating employee.");
+                console.error("Network Error:", err);
+                alert("Error updating employee. Please check your connection.");
             }
         }
 

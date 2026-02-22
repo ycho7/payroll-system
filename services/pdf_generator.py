@@ -13,6 +13,7 @@ import io
 from reportlab.pdfgen import canvas
 from pypdf import PdfReader, PdfWriter
 from datetime import date
+import re
 
 
 def generate_payroll_slip_pdf(employee, company, payroll):
@@ -297,7 +298,11 @@ def get_ea_records(db, employee_id, year):
         "address" : company.address,
         "phone_no": company.phone_no,
         "authorized_officer": company.authorized_officer,
-        "officer_designation": company.officer_designation
+        "officer_designation": company.officer_designation,
+        "marital_status": employee.marital_status,
+        "number_of_kids": employee.number_of_kids,
+        "end_date": employee.end_date,
+        "join_date": employee.join_date,
     }
 
 def create_ea_overlay(data):
@@ -315,10 +320,10 @@ def create_ea_overlay(data):
     # HEADER
     # ======================
 
-    x, y = pos(8, 2)
-    raw_id = data.get("id", 0)
-    formatted_id = f"EA{int(raw_id):05d}"
-    can.drawString(x, y, formatted_id)  
+    # x, y = pos(8, 2)
+    # raw_id = data.get("id", 0)
+    # formatted_id = f"EA{int(raw_id):05d}"
+    # can.drawString(x, y, formatted_id)  
 
     x, y = pos(8, 7)
     can.drawString(x, y, data.get('e_number', ''))  
@@ -346,6 +351,18 @@ def create_ea_overlay(data):
 
     x, y = pos(130, 38)
     can.drawString(x, y, data.get('socso_no', ''))  # A7
+
+    if data.get('number_of_kids') > 0:
+        x, y = pos(40, 47)
+        can.drawString(x, y, f"{data.get('number_of_kids')}")
+
+    if data.get('join_date') and data.get('year') in str(data.get('join_date')):
+        x, y = pos(130, 47)
+        can.drawString(x, y, data.get('join_date', '').strftime('%d/%m/%Y'))
+
+    if data.get('end_date') and data.get('year') in str(data.get('end_date')):
+        x, y = pos(130, 53)
+        can.drawString(x, y, data.get('end_date', '').strftime('%d/%m/%Y'))
 
     # ======================
     # SECTION B
@@ -410,8 +427,10 @@ def create_ea_overlay(data):
     x, y = pos(165, 183)
     can.drawRightString(x, y, f"{0:,.2f}")  # D4
 
-    x, y = pos(165, 201)
-    can.drawRightString(x, y, f"{0:,.2f}")  # D6
+    if data.get('number_of_kids') > 0:
+        tax_exemption = data.get('number_of_kids') * 2000
+        x, y = pos(165, 201)
+        can.drawRightString(x, y, f"{tax_exemption:,.2f}")  # D6
 
     # ======================
     # SECTION E
@@ -440,8 +459,32 @@ def create_ea_overlay(data):
     x, y = pos(92, 250)
     can.drawString(x, y, f"{data.get('officer_designation', '-')}")
 
+    # Ensure address is a string and not None to avoid AttributeError
+    address = data.get("address") or ""
+
+    line1 = address
+    line2 = ""
+
+    if "," in address:
+        # Find the midpoint of the string
+        mid_point = len(address) // 2
+        
+        # Get indices of all commas
+        commas = [i for i, char in enumerate(address) if char == ","]
+        
+        if commas:
+            # Find the comma closest to the middle of the address
+            best_comma = min(commas, key=lambda x: abs(x - mid_point))
+            
+            # Split at that comma
+            line1 = address[:best_comma].strip()
+            line2 = address[best_comma + 1:].strip() # +1 skips the comma itself
+
     x, y = pos(92, 255)
-    can.drawString(x, y, f"{data.get('address', '-')}")
+    can.drawString(x, y, line1)
+    if line2:
+        x, y = pos(92, 260) 
+        can.drawString(x, y, line2)
 
     x, y = pos(92, 264)
     can.drawString(x, y, f"{data.get('phone_no', '-')}")

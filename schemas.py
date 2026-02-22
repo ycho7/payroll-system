@@ -1,6 +1,14 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import date
+from enum import Enum
+
+# Define an Enum for Marital Status
+class MaritalStatus(str, Enum):
+    SINGLE = "Single"
+    MARRIED = "Married"
+    DIVORCED = "Divorced"
+    WIDOWED = "Widowed"
 
 # Common fields shared between creating and reading
 class EmployeeBase(BaseModel):
@@ -17,9 +25,18 @@ class EmployeeBase(BaseModel):
     tin_number: Optional[str] = None
     kwsp_number: Optional[str] = None          # ✅ NEW
     socso_number: Optional[str] = None         # ✅ NEW
+
+    # ✅ MARITAL & DEPENDENTS
+    marital_status: MaritalStatus = Field(default=MaritalStatus.SINGLE)
+    number_of_kids: int = Field(default=0, ge=0)
+
     join_date: Optional[date] = Field(
         default=None,
         description="Employee join date"
+    )
+    end_date: Optional[date] = Field(
+        default=None, 
+        description="Resignation or contract end date. Leave empty if still active."
     )
 
 # Fields required only when creating a new employee
