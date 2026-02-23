@@ -5,12 +5,13 @@ from datetime import datetime
 import crud, models, schemas
 from database import SessionLocal, engine
 from services.calculator import calculate_malaysian_payroll
-from services.pdf_generator import generate_payroll_slip_pdf, get_ea_records, create_ea_overlay, merge_with_template
+from services.pdf_generator import generate_payroll_slip_pdf, generate_ea_pdf
 from fastapi import Request
-from fastapi.responses import HTMLResponse, RedirectResponse, Response, StreamingResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response, StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from services.calculator import calculate_age_from_ic
+import os, zipfile, tempfile
 import io
 
 models.Base.metadata.create_all(bind=engine)
@@ -417,29 +418,55 @@ async def edit_payroll_record(
     db.commit()
     return {"success": True}
 
+@app.get("/payroll/download-ea/all/{year}")
+def download_all_ea_forms(year: str, db: Session = Depends(get_db)):
+    employees = db.query(models.Employee).all()
+
+    if not employees:
+        return {"error": "No employees found"}
+
+    temp_dir = tempfile.mkdtemp()
+    zip_path = os.path.join(temp_dir, f"EA_Forms_{year}.zip")
+
+    files_added = 0
+
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for emp in employees:
+            try:
+                pdf_stream, name, company_name = generate_ea_pdf(db, emp.id, year)
+
+                if not pdf_stream:
+                    continue  # ✅ skip if no EA
+
+                filename = f"EA_{year}_{name}_{company_name}.pdf"
+                zipf.writestr(filename, pdf_stream.read())
+                files_added += 1
+
+            except Exception:
+                continue  # ✅ silent skip
+
+    if files_added == 0:
+        return {"error": f"No EA forms found for {year}"}
+
+    return FileResponse(
+        zip_path,
+        filename=f"EA_Forms_{year}.zip",
+        media_type="application/zip"
+    )
+
 @app.get("/payroll/download-ea/{employee_id}/{year}")
 async def download_ea_form(employee_id: int, year: str, db: Session = Depends(get_db)):
-    # 1. Fetch aggregated data
-    data = get_ea_records(db, employee_id, year)
-    if not data:
+    pdf_stream, name = generate_ea_pdf(db, employee_id, year)
+
+    if not pdf_stream:
         return {"error": "No payroll records found for this year"}
-    name=data["full_name"]
 
-    # 2. Create text overlay
-    overlay = create_ea_overlay(data)
-
-    # 3. Merge with uploaded Borang EA PDF
-    final_pdf = merge_with_template(overlay)
-    
-    # 4. Stream to browser
-    output_stream = io.BytesIO()
-    final_pdf.write(output_stream)
-    output_stream.seek(0)
-    
     return StreamingResponse(
-        output_stream,
+        pdf_stream,
         media_type="application/pdf",
-        headers={"Content-Disposition": f"attachment; filename=EA_{year}_{name}.pdf"}
+        headers={
+            "Content-Disposition": f"attachment; filename=EA_{year}_{name}.pdf"
+        }
     )
 
 @app.post("/companies/", response_model=schemas.CompanyResponse)

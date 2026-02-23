@@ -521,3 +521,20 @@ def merge_with_template(overlay_packet, template_filename="EA_FORM_2025.pdf"):
     except FileNotFoundError:
         print(f"Error: {template_filename} not found in the project directory.")
         return None
+
+def generate_ea_pdf(db, employee_id: int, year: str):
+    data = get_ea_records(db, employee_id, year)
+    if not data:
+        return None, None  # ← skip condition
+
+    name = data["full_name"]
+    company_name = data["company_name"]
+
+    overlay = create_ea_overlay(data)
+    final_pdf = merge_with_template(overlay)
+
+    output_stream = io.BytesIO()
+    final_pdf.write(output_stream)
+    output_stream.seek(0)
+
+    return output_stream, name, company_name
