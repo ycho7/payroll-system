@@ -456,7 +456,7 @@ def download_all_ea_forms(year: str, db: Session = Depends(get_db)):
 
 @app.get("/payroll/download-ea/{employee_id}/{year}")
 async def download_ea_form(employee_id: int, year: str, db: Session = Depends(get_db)):
-    pdf_stream, name = generate_ea_pdf(db, employee_id, year)
+    pdf_stream, name, company_name = generate_ea_pdf(db, employee_id, year)
 
     if not pdf_stream:
         return {"error": "No payroll records found for this year"}
@@ -465,7 +465,7 @@ async def download_ea_form(employee_id: int, year: str, db: Session = Depends(ge
         pdf_stream,
         media_type="application/pdf",
         headers={
-            "Content-Disposition": f"attachment; filename=EA_{year}_{name}.pdf"
+            "Content-Disposition": f"attachment; filename=EA_{year}_{name}_{company_name}.pdf"
         }
     )
 
