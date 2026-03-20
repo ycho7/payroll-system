@@ -411,7 +411,8 @@ def create_ea_overlay(data):
     can.drawRightString(x, y, f"{0:,.2f}")  # C2
 
     x, y = pos(165, 156)
-    can.drawRightString(x, y, f"{0:,.2f}")  # TOTAL
+    total = data.get('gross_salary') + data.get('bonus')
+    can.drawRightString(x, y, f"{total:,.2f}")  # TOTAL
 
     # ======================
     # SECTION D
